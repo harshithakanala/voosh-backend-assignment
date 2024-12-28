@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "db",
+			"path": "db"
+		},
+		{
+			"name": "api",
+			"path": "api"
+		}
+	],
+	"settings": {}
+}
