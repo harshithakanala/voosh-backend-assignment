@@ -105,9 +105,9 @@ export const addUser = async (req: Request, res: Response, next: NextFunction) =
 
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { user_id } = req.params;
+    const { id } = req.params;
 
-    if (!req.user || req.user.role !== Constants.UserRole.Admin) {
+    if (!req.user) {
       return res.status(401).json({
         status: 401,
         data: null,
@@ -125,7 +125,7 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
       });
     }
 
-    if (!user_id) {
+    if (!id) {
       return res.status(400).json({
         status: 400,
         data: null,
@@ -134,7 +134,7 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
       });
     }
 
-    const user = await Data.UserData.getUserById(user_id);
+    const user = await Data.UserData.getUserById(id);
 
     if (!user) {
       return res.status(404).json({
@@ -145,7 +145,7 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
       });
     }
 
-    await Data.UserData.deleteUserById(user_id);
+    await Data.UserData.deleteUserById(id);
 
     return res.status(200).json({
       status: 200,

@@ -1,4 +1,5 @@
 @baseURL = http://localhost:5000/api/v1
+
 ################# Auth Routes #####################################
 ### 1. Test Signup (Valid Request)
 POST {{baseURL}}/signup

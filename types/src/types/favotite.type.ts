@@ -1,10 +1,10 @@
 import { BaseType } from './base.type';
-import { EntityType } from './constants';
+import { CategoryType } from './constants';
 
-export type EntityType = keyof typeof EntityType;
+export type CategoryType = keyof typeof CategoryType;
 
 export type Favorite = BaseType & {
   userId: string; 
-  entityId: string; 
-  entityType: EntityType;
+  itemId: string; 
+  category: CategoryType;
 }

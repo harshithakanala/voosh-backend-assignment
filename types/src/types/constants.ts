@@ -6,7 +6,7 @@ export const UserRole = {
     Viewer: 'Viewer'
   } as const;
   
-  export const EntityType = {
+  export const CategoryType = {
     Artist: 'Artist',
     Album: 'Album',
     Track: 'Track'

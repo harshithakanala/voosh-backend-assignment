@@ -34,9 +34,9 @@ export const validateAddUser = [
 ];
 
 export const validateDeleteUser = [
-  param('user_id')
-    .isMongoId()
-    .withMessage('User ID must be a valid MongoDB ObjectId.')
+  param('id')
+    .isUUID()
+    .withMessage('Invalid User ID.')
     .notEmpty()
     .withMessage('User ID is required.'),
 ];

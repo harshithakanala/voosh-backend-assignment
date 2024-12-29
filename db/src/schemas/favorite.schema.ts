@@ -12,15 +12,15 @@ const FavoriteSchema = new Schema<Types.Favorite>({
     type: String,
     required: [true, 'User ID is required'],
   },
-  entityId: {
+  itemId: {
     type: String,
     required: [true, 'Entity ID is required'],
   },
-  entityType: {
+  category: {
     type: String,
     required: [true, 'Entity type is required'],
     enum: {
-      values: Object.values(Constants.EntityType),
+      values: Object.values(Constants.CategoryType),
       message: 'Invalid value for entity type',
     },
   },

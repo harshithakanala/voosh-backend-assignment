@@ -4,12 +4,12 @@ import { authenticate, authorize } from '../../middlewares/auth.middleware';
 
 const router = express.Router();
 
-router.get('/users', authenticate, authorize(['Admin']), UserValidator.validateGetUsers, UserController.getUsers);
+router.get('/', authenticate, authorize(['Admin']), UserValidator.validateGetUsers, UserController.getUsers);
 
-router.post('/users/add-user', authenticate, authorize(['Admin']), UserValidator.validateAddUser, UserController.addUser);
+router.post('/add-user', authenticate, authorize(['Admin']), UserValidator.validateAddUser, UserController.addUser);
 
-router.delete('/users/:user_id', authenticate, authorize(['Admin']), UserValidator.validateDeleteUser, UserController.deleteUser);
+router.delete('/:id', authenticate, authorize(['Admin']), UserValidator.validateDeleteUser, UserController.deleteUser);
 
-router.put('/users/update-password', authenticate, UserValidator.validateUpdatePassword, UserController.updatePassword);
+router.put('/update-password', authenticate, UserValidator.validateUpdatePassword, UserController.updatePassword);
 
 export { router as UserRouteService };

@@ -4,6 +4,10 @@ import { AuthRouteService } from './services/auth/router';
 import { connectToDatabase } from 'music-database';
 import path from 'path';
 import { UserRouteService } from './services/user/router';
+import { ArtistRouteService } from './services/artist/router';
+import { AlbumRouteService } from './services/album/router';
+import { TrackRouteService } from './services/track/router';
+import { FavoriteRouteService } from './services/favorite/router';
 
 dotenv.config({ path: path.resolve(__dirname, '../environment/.env') });
 
@@ -23,7 +27,11 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1', AuthRouteService);
-app.use('/api/v1', UserRouteService);
+app.use('/api/v1/users', UserRouteService);
+app.use('/api/v1/artists', ArtistRouteService);
+app.use('/api/v1/albums', AlbumRouteService);
+app.use('/api/v1/tracks', TrackRouteService);
+app.use('/api/v1/favorites', FavoriteRouteService);
 
 app.listen(port, () => {
   const baseUrl = `http://${host}:${port}/api`;
