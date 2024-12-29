@@ -1,0 +1,137 @@
+@baseURL = http://localhost:5000/api
+
+### 1. Test Signup (Valid Request)
+POST {{baseURL}}/signup
+Content-Type: application/json
+
+{
+  "email": "test2@gmail.com",
+  "password": "test2@123"
+}
+
+### Expected Response
+HTTP/1.1 201 Created
+{
+  "status": 201,
+  "data": null,
+  "message": "User created successfully.",
+  "error": null
+}
+
+### 2. Test Signup (Missing Fields - Email)
+POST {{baseURL}}/signup
+Content-Type: application/json
+
+{
+  "password": "securePassword123"
+}
+
+### Expected Response
+HTTP/1.1 400 Bad Request
+{
+  "status": 400,
+  "data": null,
+  "message": "Bad Request, Reason:${Missing Field}.",
+  "error": null
+}
+
+### 3. Test Signup (Email Already Exists)
+POST {{baseURL}}/signup
+Content-Type: application/json
+
+{
+  "email": "test2@gmail.com",
+  "password": "test@123"
+}
+
+### Expected Response
+HTTP/1.1 409 Conflict
+{
+  "status": 409,
+  "data": null,
+  "message": "Email already exists.",
+  "error": null
+}
+
+### 4. Test Login (Valid Request)
+POST {{baseURL}}/login
+Content-Type: application/json
+
+{
+  "email": "test2@gmail.com",
+  "password": "test2@123"
+}
+
+### Expected Response
+HTTP/1.1 200 OK
+{
+  "status": 200,
+  "data": {
+    "token": "fdg9..."
+  },
+  "message": "Login successful.",
+  "error": null
+}
+
+### 5. Test Login (Invalid Credentials - Wrong Password)
+POST {{baseURL}}/login
+Content-Type: application/json
+
+{
+  "email": "test2@gmail.com",
+  "password": "tes2@123"
+}
+
+### Expected Response
+HTTP/1.1 400 Bad Request
+{
+  "status": 400,
+  "data": null,
+  "message": "Bad Request, Reason:${Missing Field}.",
+  "error": null
+}
+
+### 6. Test Login (User Not Found)
+POST {{baseURL}}/login
+Content-Type: application/json
+
+{
+  "email": "test2@gmail.com",
+  "password": "admin@123"
+}
+
+### Expected Response
+HTTP/1.1 404 Not Found
+{
+  "status": 404,
+  "data": null,
+  "message": "User not found.",
+  "error": null
+}
+
+### 7. Test Logout (Valid Request)
+GET {{baseURL}}/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YmFhYTYzYS1lOWZiLTQyYWMtOWZmNC0zNjZiNzkwMTJkNTEiLCJpYXQiOjE3MzU0NTQ1OTAsImV4cCI6MTczNTQ1ODE5MH0.FnT97OOhDlHmkgNLyZw4aHPmsGg8V_vbzLRMv8_EceM
+
+### Expected Response
+HTTP/1.1 200 OK
+{
+  "status": 200,
+  "data": null,
+  "message": "User logged out successfully.",
+  "error": null
+}
+
+### 8. Test Logout (Invalid Token)
+GET {{baseURL}}/logout
+Authorization: Bearer eciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMxZGU0NGZjLTRiM2UtNDY5Mi05MjJhLTdmZWU0ZWVjZTA0OSIsImlhdCI6MTczNTQwOTIyNiwiZXhwIjoxNzM1NDEyODI2fQ.9wesf80eDKKtO3ONzNo8X94mrw3Eiy7xOVIhowbZQII
+
+
+### Expected Response
+HTTP/1.1 400 Bad Request
+{
+  "status": 400,
+  "data": null,
+  "message": "Bad Request",
+  "error": null
+}

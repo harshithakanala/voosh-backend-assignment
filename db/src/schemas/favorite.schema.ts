@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { Constants, Types } from '../types';
+import { Constants, Types } from 'music-types';
 import { schemaOptions } from './schema-options';
 import { randomUUID } from 'crypto';
 

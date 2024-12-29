@@ -1,0 +1,28 @@
+{
+  "name": "music-types",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "eslint ./src/"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Harshitha S Kanala",
+    "email": "harshithasubramanyam2001@gmail.com"
+  },
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^20.12.11",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "9.x",
+    "globals": "^15.9.0",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.0"
+  },
+  "packageManager": "yarn@1.22.19"
+}

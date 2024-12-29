@@ -1,1 +1,2 @@
-export { Constants, Types } from './types';
+export { connectToDatabase } from './connection';
+export * from './data';
