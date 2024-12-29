@@ -104,7 +104,7 @@ export const updateArtist = async (req: Request, res: Response, next: NextFuncti
       return handleBadRequest(res, 'Bad Request.');
     }
 
-    if (typeof name !== 'string' || grammy !== undefined && typeof grammy !== 'number' || hidden !== undefined && typeof hidden !== 'boolean') {
+    if (name !== undefined && typeof name !== 'string' || grammy !== undefined && typeof grammy !== 'number' || hidden !== undefined && typeof hidden !== 'boolean') {
       return handleBadRequest(res, 'Bad Request.');
     }
 

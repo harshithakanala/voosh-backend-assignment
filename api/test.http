@@ -1,4 +1,5 @@
 @baseURL = http://localhost:5000/api/v1
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlZmY3NDE0NC1kNTFkLTQwOWUtODk2NC00MTE1OTM5NmRkNWIiLCJpYXQiOjE3MzU0OTcyODUsImV4cCI6MTczNTU0MDQ4NX0.B9vQq4pkJIc5kbN6k3CKTh6x4-KdofX8w8oncT_sc2c
 
 ################# Auth Routes #####################################
 ### 1. Test Signup (Valid Request)
@@ -238,3 +239,72 @@ Content-Type: application/json
   "old_password": "validOldPassword",
   "new_password": "newSecurePassword"
 }
+
+######################## Artist Routes #################################
+
+### Get all artists (Valid Request)
+GET {{baseURL}}/artists
+Authorization: Bearer {{token}}
+
+### Get all artists (Invalid Query Parameters)
+GET {{baseURL}}/artists?limit=5&offset=0&grammy=invalid
+Authorization: Bearer {{token}}
+
+### Get artist by ID (Valid Request)
+GET {{baseURL}}/artists/f5e06805-ce32-42ce-bd35-15ace88f74b8
+Authorization: Bearer {{token}}
+
+### Get artist by ID (Invalid ID)
+GET {{baseURL}}/artists/invalid
+Authorization: Bearer {{token}}
+
+### Add a new artist (Valid Request)
+POST {{baseURL}}/artists/add-artist
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Taylor Swift",
+  "grammy": 10,
+  "hidden": false
+}
+
+### Add a new artist (Invalid Request Body)
+POST {{baseURL}}/artists/add-artist
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "New Artist",
+  "grammy": "invalid",
+  "hidden": false
+}
+
+### Update an artist (Valid Request)
+PUT {{baseURL}}/artists/f5e06805-ce32-42ce-bd35-15ace88f74b8
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "grammy": 20,
+  "hidden": false
+}
+
+### Update an artist (Invalid Request Body)
+PUT {{baseURL}}/artists/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Updated Artist",
+  "grammy": "invalid",
+  "hidden": true
+}
+
+### Delete an artist (Valid Request)
+DELETE {{baseURL}}/artists/f5e06805-ce32-42ce-bd35-15ace88f74b8
+Authorization: Bearer {{token}}
+
+### Delete an artist (Invalid ID)
+DELETE {{baseURL}}/artists/invalid
+Authorization: Bearer {{token}}

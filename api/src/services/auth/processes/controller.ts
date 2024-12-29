@@ -53,7 +53,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
       return handleUnauthorized(res, 'Invalid password.');
     }
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '12h' });
 
     return handleSuccess(res, { token }, 'Login successful.');
   } catch (error) {

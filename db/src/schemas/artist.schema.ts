@@ -14,7 +14,7 @@ const ArtistSchema = new Schema<Types.Artist>({
     maxlength: [100, 'Artist name cannot exceed 100 characters'],
   },
   grammy: {
-    type: Boolean,
+    type: Number,
     required: true,
   },
   hidden: {
