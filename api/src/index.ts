@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { AuthRouteService } from './services/auth/router';
 import { connectToDatabase } from 'music-database';
 import path from 'path';
+import { UserRouteService } from './services/user/router';
 
 dotenv.config({ path: path.resolve(__dirname, '../environment/.env') });
 
@@ -21,7 +22,8 @@ app.get('/', (req, res) => {
   res.send('Music API is running');
 });
 
-app.use('/api', AuthRouteService);
+app.use('/api/v1', AuthRouteService);
+app.use('/api/v1', UserRouteService);
 
 app.listen(port, () => {
   const baseUrl = `http://${host}:${port}/api`;

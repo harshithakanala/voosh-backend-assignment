@@ -43,8 +43,8 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     res.status(401).json({
       status: 401,
       data: null,
-      message: 'Unauthorized: Invalid token.',
-      error: error instanceof Error ? error.message : null,
+      message: 'Unauthorized Access',
+      error: null,
     });
 
     return;

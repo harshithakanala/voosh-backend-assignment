@@ -1,12 +1,12 @@
-@baseURL = http://localhost:5000/api
-
+@baseURL = http://localhost:5000/api/v1
+################# Auth Routes #####################################
 ### 1. Test Signup (Valid Request)
 POST {{baseURL}}/signup
 Content-Type: application/json
 
 {
-  "email": "test2@gmail.com",
-  "password": "test2@123"
+  "email": "editor@gmail.com",
+  "password": "editor@123"
 }
 
 ### Expected Response
@@ -58,9 +58,19 @@ POST {{baseURL}}/login
 Content-Type: application/json
 
 {
-  "email": "test2@gmail.com",
-  "password": "test2@123"
+  "email": "editor@gmail.com",
+  "password": "password@123"
 }
+
+#####
+POST {{baseURL}}/login
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "admin@123"
+}
+
 
 ### Expected Response
 HTTP/1.1 200 OK
@@ -134,4 +144,96 @@ HTTP/1.1 400 Bad Request
   "data": null,
   "message": "Bad Request",
   "error": null
+}
+
+######################## User Routes #################################
+
+### Test Get All Users (Admin Only)
+GET {{baseURL}}/users?limit=5&offse=0&role=Editor
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlZmY3NDE0NC1kNTFkLTQwOWUtODk2NC00MTE1OTM5NmRkNWIiLCJpYXQiOjE3MzU0NjMyODAsImV4cCI6MTczNTQ2Njg4MH0.rk0is0jhc8UJCJfCLw_sVKFEivppyOMylek7BA8XvzU
+
+### Test Add a New User (Admin Only)
+POST {{baseURL}}/users/add-user
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlZmY3NDE0NC1kNTFkLTQwOWUtODk2NC00MTE1OTM5NmRkNWIiLCJpYXQiOjE3MzU0NjMyODAsImV4cCI6MTczNTQ2Njg4MH0.rk0is0jhc8UJCJfCLw_sVKFEivppyOMylek7BA8XvzU 
+Content-Type: application/json
+
+{
+  "email": "editor@gmail.com",
+  "password": "editor@123",
+  "role": "Editor"
+}
+
+### 200 - User Deleted Successfully
+DELETE {{baseURL}}/users/b6c132bd-99f0-4d75-a682-d16e9e50a891
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlZmY3NDE0NC1kNTFkLTQwOWUtODk2NC00MTE1OTM5NmRkNWIiLCJpYXQiOjE3MzU0NjMyODAsImV4cCI6MTczNTQ2Njg4MH0.rk0is0jhc8UJCJfCLw_sVKFEivppyOMylek7BA8XvzU
+Content-Type: application/json
+
+### 400 - Bad Request
+DELETE {{baseURL}}/users/c6c132bd-99f0-4d75-a682-d16e9e50a891
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1NmI0NDdjMS0wNmVkLTRhNzUtOWVmMy1lZjQ0YmE1NzczMzYiLCJpYXQiOjE3MzU0NjQwODQsImV4cCI6MTczNTQ2NzY4NH0._-zZ_r79Li9rAqu_D6UFy19ZvGQegh4fQCLbE_yKfTE
+Content-Type: application/json
+
+### 401 - Unauthorized Access
+DELETE {{baseURL}}/users/b6c132bd-99f0-4d75-a682-d16e9e50a891
+Authorization: Bearer invalidtoken
+Content-Type: application/json
+
+### 403 - Forbidden Access
+DELETE {{baseURL}}/users/b6c132bd-99f0-4d75-a682-d16e9e50a891
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1NmI0NDdjMS0wNmVkLTRhNzUtOWVmMy1lZjQ0YmE1NzczMzYiLCJpYXQiOjE3MzU0NjQwODQsImV4cCI6MTczNTQ2NzY4NH0._-zZ_r79Li9rAqu_D6UFy19ZvGQegh4fQCLbE_yKfTE
+Content-Type: application/json
+
+### 404 - User Not Found
+DELETE {{baseURL}}/users/b6c132bd-99f0-4d75-a682-d16e9e50a89
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlZmY3NDE0NC1kNTFkLTQwOWUtODk2NC00MTE1OTM5NmRkNWIiLCJpYXQiOjE3MzU0NjMyODAsImV4cCI6MTczNTQ2Njg4MH0.rk0is0jhc8UJCJfCLw_sVKFEivppyOMylek7BA8XvzU
+Content-Type: application/json
+
+############ Password Update ###############
+### 204 - Password Updated Successfully
+PUT {{baseURL}}/users/update-password
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjYTA0ZWJmMC00NmNlLTRiMjUtYjFmOS1hNzI0YmZjNzFmMjEiLCJpYXQiOjE3MzU0NjYwMDYsImV4cCI6MTczNTQ2OTYwNn0.6WXTU1npxqTpgnRJECtaJKTjPUJOrkQwDbP-u9IDyPc
+Content-Type: application/json
+
+{
+  "old_password": "editor@123",
+  "new_password": "password@123"
+}
+
+### 400 - Bad Request
+PUT {{baseURL}}/users/update-password
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlZmY3NDE0NC1kNTFkLTQwOWUtODk2NC00MTE1OTM5NmRkNWIiLCJpYXQiOjE3MzU0NjMyODAsImV4cCI6MTczNTQ2Njg4MH0.rk0is0jhc8UJCJfCLw_sVKFEivppyOMylek7BA8XvzU
+Content-Type: application/json
+
+{
+  "old_password": "validOldPassword"
+}
+
+### 401 - Unauthorized Access
+PUT {{baseURL}}/users/update-password
+Authorization: Bearer invalidToken
+Content-Type: application/json
+
+{
+  "old_password": "validOldPassword",
+  "new_password": "newSecurePassword"
+}
+
+### 403 - Forbidden Access
+PUT {{baseURL}}/users/update-password
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlZmY3NDE0NC1kNTFkLTQwOWUtODk2NC00MTE1OTM5NmRkNWIiLCJpYXQiOjE3MzU0NjMyODAsImV4cCI6MTczNTQ2Njg4MH0.rk0is0jhc8UJCJfCLw_sVKFEivppyOMylek7BA8XvzU
+Content-Type: application/json
+
+{
+  "old_password": "invalidOldPassword",
+  "new_password": "newSecurePassword"
+}
+
+### 404 - User Not Found
+PUT {{baseURL}}/users/update-password
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlZmY3NDE0NC1kNTFkLTQwOWUtODk2NC00MTE1OTM5NmRkNWIiLCJpYXQiOjE3MzU0NjMyODAsImV4cCI6MTczNTQ2Njg4MH0.rk0is0jhc8UJCJfCLw_sVKFEivppyOMylek7BA8XvzU
+Content-Type: application/json
+
+{
+  "old_password": "validOldPassword",
+  "new_password": "newSecurePassword"
 }
