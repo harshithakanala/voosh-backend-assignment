@@ -115,7 +115,7 @@ export const updateAlbum = async (req: Request, res: Response, next: NextFunctio
       return handleBadRequest(res, 'Bad Request.');
     }
 
-    if (typeof name !== 'string' || typeof year !== 'number' || typeof hidden !== 'boolean') {
+    if (name !== undefined && typeof name !== 'string' || year !== undefined && typeof year !== 'number' || hidden !== undefined && typeof hidden !== 'boolean') {
       return handleBadRequest(res, 'Bad Request.');
     }
 

@@ -308,3 +308,73 @@ Authorization: Bearer {{token}}
 ### Delete an artist (Invalid ID)
 DELETE {{baseURL}}/artists/invalid
 Authorization: Bearer {{token}}
+
+######################## Album Routes #################################
+
+### Get all albums (Valid Request)
+GET {{baseURL}}/albums
+Authorization: Bearer {{token}}
+
+### Get all albums (Invalid Query Parameters)
+GET {{baseURL}}/albums?limit=5&offset=0&hidden=invalid
+Authorization: Bearer {{token}}
+
+### Get album by ID (Valid Request)
+GET {{baseURL}}/albums/f5e06805-ce32-42ce-bd35-15ace88f74b8
+Authorization: Bearer {{token}}
+
+### Get album by ID (Invalid ID)
+GET {{baseURL}}/albums/invalid
+Authorization: Bearer {{token}}
+
+### Add a new album (Valid Request)
+POST {{baseURL}}/albums/add-album
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "New Album 2",
+  "year": 2024,
+  "hidden": false,
+  "artistId": "c903b7e7-a90d-4fa3-92c1-89c62ab1563c"
+}
+
+### Add a new album (Invalid Request Body)
+POST {{baseURL}}/albums/add-album
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "New Album",
+  "year": "invalid",
+  "hidden": false,
+  "artistId": "c903b7e7-a90d-4fa3-92c1-89c62ab1563c"
+}
+
+### Update an album (Valid Request)
+PUT {{baseURL}}/albums/70d99bfb-43e8-4244-974a-900578b89590
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Midnight Memories"
+}
+
+### Update an album (Invalid Request Body)
+PUT {{baseURL}}/albums/c903b7e7-a90d-4fa3-92c1-89c62ab1563c
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Updated Album",
+  "year": "invalid",
+  "hidden": true
+}
+
+### Delete an album (Valid Request)
+DELETE {{baseURL}}/albums/727fa020-1fb9-4765-8f99-16eaed5228df
+Authorization: Bearer {{token}}
+
+### Delete an album (Invalid ID)
+DELETE {{baseURL}}/albums/invalid
+Authorization: Bearer {{token}}
