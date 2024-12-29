@@ -14,17 +14,19 @@ const FavoriteSchema = new Schema<Types.Favorite>({
   },
   itemId: {
     type: String,
-    required: [true, 'Entity ID is required'],
+    required: [true, 'Item ID is required'],
   },
   category: {
     type: String,
-    required: [true, 'Entity type is required'],
+    required: [true, 'Category is required'],
     enum: {
       values: Object.values(Constants.CategoryType),
-      message: 'Invalid value for entity type',
+      message: 'Invalid value for category type',
     },
   },
 }, schemaOptions);
+
+FavoriteSchema.index({ userId: 1, itemId: 1, category: 1 }, { unique: true });
 
 FavoriteSchema.virtual('User', {
   ref: 'user',

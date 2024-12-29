@@ -35,6 +35,19 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         error: null,
       });
     }
+
+    // Check if the token is invalidated (e.g., after logout)
+    const isTokenInvalidated = await Data.TokenData.isTokenInvalidated(token);
+
+    if (isTokenInvalidated) {
+      return res.status(401).json({
+        status: 401,
+        data: null,
+        message: 'Unauthorized Access',
+        error: null,
+      });
+    }
+
     req.user = user;
     next();
 

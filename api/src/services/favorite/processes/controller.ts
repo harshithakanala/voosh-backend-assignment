@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { Constants, Types } from 'music-types';
 import { Data } from 'music-database';
-import { handleBadRequest, handleUnauthorized, handleForbidden, handleNotFound, handleSuccess, handleCreated } from '../../../utils/statusHandler';
+import { handleBadRequest, handleUnauthorized, handleForbidden, handleNotFound, handleSuccess, handleCreated, handleConflict } from '../../../utils/statusHandler';
 import { handleError } from '../../../utils/errorHandler';
 
 export const addFavoriteController = async (req: Request, res: Response, next: NextFunction) => {
@@ -41,14 +41,26 @@ export const addFavoriteController = async (req: Request, res: Response, next: N
       return handleNotFound(res, `${category} not found.`);
     }
 
+    if (!user._id) {
+      return handleBadRequest(res, 'User ID is missing.');
+    }
+
     const favoriteData: Types.Favorite = {
-      ...req.body,
       userId: user._id,
+      itemId: item_id,
+      category,
     };
 
-    const favorite = await Data.FavoriteData.addFavorite(favoriteData);
+    try {
+      const favorite = await Data.FavoriteData.addFavorite(favoriteData);
 
-    return handleCreated(res, favorite, 'Favorite added successfully');
+      return handleCreated(res, favorite, 'Favorite added successfully');
+    } catch (error) {
+      if (error.code === 11000) {
+        return handleConflict(res, 'Favorite already exists.');
+      }
+      throw error;
+    }
   } catch (error) {
     return handleError(res, next, error);
   }
@@ -113,10 +125,10 @@ export const removeFavorite = async (req: Request, res: Response, next: NextFunc
       return handleForbidden(res, 'Forbidden Access/Operation not allowed.');
     }
 
-    const deletedFavourite = await Data.FavoriteData.removeFavoriteById(id);
+    const deletedFavorite = await Data.FavoriteData.removeFavoriteById(id);
 
-    if (!deletedFavourite) {
-      return handleNotFound(res, 'Favourite not found.');
+    if (!deletedFavorite) {
+      return handleNotFound(res, 'Favorite not found.');
     }
 
     return handleSuccess(res, null, 'Favorite removed successfully.');

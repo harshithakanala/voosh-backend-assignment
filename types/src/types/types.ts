@@ -4,3 +4,4 @@ export * from './artist.type';
 export * from './album.type';
 export * from './favotite.type';
 export * from './track.type';
+export * from './token.type';

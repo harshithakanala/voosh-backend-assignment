@@ -1,5 +1,5 @@
 @baseURL = http://localhost:5000/api/v1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlZmY3NDE0NC1kNTFkLTQwOWUtODk2NC00MTE1OTM5NmRkNWIiLCJpYXQiOjE3MzU0OTcyODUsImV4cCI6MTczNTU0MDQ4NX0.B9vQq4pkJIc5kbN6k3CKTh6x4-KdofX8w8oncT_sc2c
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjYTA0ZWJmMC00NmNlLTRiMjUtYjFmOS1hNzI0YmZjNzFmMjEiLCJpYXQiOjE3MzU1MDM4MDIsImV4cCI6MTczNTU0NzAwMn0.0Qw-bGYJxhg1buO1oQVOBFGeA84W0Alxd2HKuGLK93o
 
 ################# Auth Routes #####################################
 ### 1. Test Signup (Valid Request)
@@ -61,7 +61,7 @@ Content-Type: application/json
 
 {
   "email": "editor@gmail.com",
-  "password": "password@123"
+  "password": "editor@123"
 }
 
 #####
@@ -123,7 +123,7 @@ HTTP/1.1 404 Not Found
 
 ### 7. Test Logout (Valid Request)
 GET {{baseURL}}/logout
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YmFhYTYzYS1lOWZiLTQyYWMtOWZmNC0zNjZiNzkwMTJkNTEiLCJpYXQiOjE3MzU0NTQ1OTAsImV4cCI6MTczNTQ1ODE5MH0.FnT97OOhDlHmkgNLyZw4aHPmsGg8V_vbzLRMv8_EceM
+Authorization: Bearer {{token}}
 
 ### Expected Response
 HTTP/1.1 200 OK
@@ -193,12 +193,12 @@ Content-Type: application/json
 ############ Password Update ###############
 ### 204 - Password Updated Successfully
 PUT {{baseURL}}/users/update-password
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjYTA0ZWJmMC00NmNlLTRiMjUtYjFmOS1hNzI0YmZjNzFmMjEiLCJpYXQiOjE3MzU0NjYwMDYsImV4cCI6MTczNTQ2OTYwNn0.6WXTU1npxqTpgnRJECtaJKTjPUJOrkQwDbP-u9IDyPc
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "old_password": "editor@123",
-  "new_password": "password@123"
+  "old_password": "password@123",
+  "new_password": "editor@123"
 }
 
 ### 400 - Bad Request
@@ -264,7 +264,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": "Taylor Swift",
+  "name": "Eminem",
   "grammy": 10,
   "hidden": false
 }
@@ -449,4 +449,114 @@ Authorization: Bearer {{token}}
 
 ### Delete a track (Invalid ID)
 DELETE {{baseURL}}/tracks/invalid
+Authorization: Bearer {{token}}
+
+######################## Favorites Routes #################################
+
+### Add a favorite artist (Valid Request)
+POST {{baseURL}}/favorites/add-favorite
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category": "Artist",
+  "item_id": "73581e23-34dc-47a9-9313-ad11fa83f98a"
+}
+
+### Add a favorite artist (Invalid Request Body)
+POST {{baseURL}}/favorites/add-favorite
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category": "Artist",
+  "item_id": "invalid"
+}
+
+### Get favorite artists (Valid Request)
+GET {{baseURL}}/favorites/Artist
+Authorization: Bearer {{token}}
+
+### Get favorite artists (Invalid Token)
+GET {{baseURL}}/favorites/Artist
+Authorization: Bearer invalidToken
+
+### Remove a favorite artist (Valid Request)
+DELETE {{baseURL}}/favorites/remove-favorite/34a5e00a-2f3c-4d52-98dd-4f4e553633a2
+Authorization: Bearer {{token}}
+
+### Remove a favorite artist (Invalid ID)
+DELETE {{baseURL}}/favorites/remove-favorite/invalid
+Authorization: Bearer {{token}}
+
+### Add a favorite album (Valid Request)
+POST {{baseURL}}/favorites/add-favorite
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category": "Album",
+  "item_id": "70d99bfb-43e8-4244-974a-900578b89590"
+}
+
+### Add a favorite album (Invalid Request Body)
+POST {{baseURL}}/favorites/add-favorite
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category": "Album",
+  "item_id": "invalid"
+}
+
+### Get favorite albums (Valid Request)
+GET {{baseURL}}/favorites/Album
+Authorization: Bearer {{token}}
+
+### Get favorite albums (Invalid Token)
+GET {{baseURL}}/favorites/Album
+Authorization: Bearer invalidToken
+
+### Remove a favorite album (Valid Request)
+DELETE {{baseURL}}/favorites/remove-favorite/70d99bfb-43e8-4244-974a-900578b89590
+Authorization: Bearer {{token}}
+
+### Remove a favorite album (Invalid ID)
+DELETE {{baseURL}}/favorites/remove-favorite/invalid
+Authorization: Bearer {{token}}
+
+### Add a favorite track (Valid Request)
+POST {{baseURL}}/favorites/add-favorite
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category": "Track",
+  "item_id": "c38efe23-caf0-4c42-a3dd-007d891f8a22"
+}
+
+### Add a favorite track (Invalid Request Body)
+POST {{baseURL}}/favorites/add-favorite
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category": "Track",
+  "item_id": "invalid"
+}
+
+### Get favorite tracks (Valid Request)
+GET {{baseURL}}/favorites/Track
+Authorization: Bearer {{token}}
+
+### Get favorite tracks (Invalid Token)
+GET {{baseURL}}/favorites/Track
+Authorization: Bearer invalidToken
+
+### Remove a favorite track (Valid Request)
+DELETE {{baseURL}}/favorites/remove-favorite/c38efe23-caf0-4c42-a3dd-007d891f8a22
+Authorization: Bearer {{token}}
+
+### Remove a favorite track (Invalid ID)
+DELETE {{baseURL}}/favorites/remove-favorite/invalid
 Authorization: Bearer {{token}}

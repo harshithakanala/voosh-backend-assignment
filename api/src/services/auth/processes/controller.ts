@@ -61,22 +61,20 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
-export const logoutUser = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+export const logoutUser = async (req: Request, res: Response): Promise<Response> => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return handleUnauthorized(res, 'Unauthorized Access.');
+  }
+
+  const token = authHeader.split(' ')[1];
+
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-
-    if (!token) {
-      return handleBadRequest(res, 'Bad Request.');
-    }
-
-    try {
-      await jwt.verify(token, JWT_SECRET);
-    } catch (err) {
-      return handleBadRequest(res, 'Bad Request.');
-    }
+    await Data.TokenData.invalidateToken(token);
 
     return handleSuccess(res, null, 'User logged out successfully.');
   } catch (error) {
-    return handleError(res, next, error);
+    return handleUnauthorized(res, 'Unauthorized Access.');
   }
 };

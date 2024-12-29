@@ -9,10 +9,9 @@ export const validateGetFavorites = [
 
 export const validateAddFavorite = [
   body('category').isIn([Constants.CategoryType.Artist, Constants.CategoryType.Album, Constants.CategoryType.Track]).withMessage('Invalid category.'),
-  body('itemId').notEmpty().withMessage('Item ID is required.'),
-  body('name').notEmpty().withMessage('Name is required.'),
+  body('item_id').notEmpty().withMessage('Item ID is required.'),
 ];
 
 export const validateRemoveFavorite = [
-  param('favorite_id').isUUID().withMessage('Invalid favorite ID.'),
+  param('id').isUUID().withMessage('Invalid favorite ID.'),
 ];
