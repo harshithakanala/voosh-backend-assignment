@@ -15,6 +15,9 @@
     "email": "harshithasubramanyam2001@gmail.com"
   },
   "license": "ISC",
+  "engines": {
+    "node": "20.x"
+  },
   "dependencies": {
     "@types/node": "20",
     "bcryptjs": "^2.4.3",
