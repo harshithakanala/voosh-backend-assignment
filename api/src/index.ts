@@ -1,13 +1,13 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { AuthRouteService } from './services/auth/router';
-import { connectToDatabase } from 'music-database';
 import path from 'path';
 import { UserRouteService } from './services/user/router';
 import { ArtistRouteService } from './services/artist/router';
 import { AlbumRouteService } from './services/album/router';
 import { TrackRouteService } from './services/track/router';
 import { FavoriteRouteService } from './services/favorite/router';
+import { connectToDatabase } from 'music-database';
 
 dotenv.config({ path: path.resolve(__dirname, '../environment/.env') });
 
