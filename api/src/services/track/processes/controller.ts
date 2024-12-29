@@ -125,7 +125,22 @@ export const addTrack = async (req: Request, res: Response, next: NextFunction) 
       hidden,
     });
 
-    return handleCreated(res, newTrack, 'Track created successfully.');
+    const populatedTrack = await Data.TrackData.getTrackById(newTrack._id);
+
+    if (!populatedTrack) {
+      return handleError(res, next, new Error('Failed to populate track.'));
+    }
+
+    const response = {
+      _id: populatedTrack._id,
+      name: populatedTrack.name,
+      duration: populatedTrack.duration,
+      hidden: populatedTrack.hidden,
+      artist_name: populatedTrack.Artist?.name,
+      album_name: populatedTrack.Album?.name,
+    };
+
+    return handleCreated(res, response, 'Track created successfully.');
   } catch (error) {
     return handleError(res, next, error);
   }
@@ -155,9 +170,22 @@ export const updateTrack = async (req: Request, res: Response, next: NextFunctio
       return handleNotFound(res, 'Track not found.');
     }
 
-    await Data.TrackData.updateTrack(id, updateData);
+    const updatedTrack = await Data.TrackData.updateTrack(id, updateData);
 
-    return handleNoContent(res);
+    if (!updatedTrack) {
+      return handleError(res, next, new Error('Failed to update track.'));
+    }
+
+    const response = {
+      _id: updatedTrack._id,
+      name: updatedTrack.name,
+      duration: updatedTrack.duration,
+      hidden: updatedTrack.hidden,
+      artist_name: updatedTrack.Artist?.name,
+      album_name: updatedTrack.Album?.name,
+    };
+
+    return handleSuccess(res, response, 'Track updated successfully.');
   } catch (error) {
     return handleError(res, next, error);
   }

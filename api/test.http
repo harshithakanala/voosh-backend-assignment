@@ -378,3 +378,75 @@ Authorization: Bearer {{token}}
 ### Delete an album (Invalid ID)
 DELETE {{baseURL}}/albums/invalid
 Authorization: Bearer {{token}}
+
+######################## Track Routes #################################
+
+### Get all tracks (Valid Request)
+GET {{baseURL}}/tracks?limit=5&offset=0
+Authorization: Bearer {{token}}
+
+### Get all tracks (Invalid Query Parameters)
+GET {{baseURL}}/tracks?limit=invalid&offset=0
+Authorization: Bearer {{token}}
+
+### Get track by ID (Valid Request)
+GET {{baseURL}}/tracks/c38efe23-caf0-4c42-a3dd-007d891f8a22
+Authorization: Bearer {{token}}
+
+### Get track by ID (Invalid ID)
+GET {{baseURL}}/tracks/invalid
+Authorization: Bearer {{token}}
+
+### Add a new track (Valid Request)
+POST {{baseURL}}/tracks/add-track
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "artist_id": "c903b7e7-a90d-4fa3-92c1-89c62ab1563c",
+  "album_id": "70d99bfb-43e8-4244-974a-900578b89590",
+  "name": "Story of My Life",
+  "duration": 300,
+  "hidden": false
+}
+
+### Add a new track (Invalid Request Body)
+POST {{baseURL}}/tracks/add-track
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "artist_id": "c903b7e7-a90d-4fa3-92c1-89c62ab1563c",
+  "album_id": "f5e06805-ce32-42ce-bd35-15ace88f74b8",
+  "name": "New Track",
+  "duration": "invalid",
+  "hidden": false
+}
+
+### Update a track (Valid Request)
+PUT {{baseURL}}/tracks/d236de71-298e-4e26-b633-1d689c262d20
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Story of My Life",
+  "duration": 320
+}
+
+### Update a track (Invalid Request Body)
+PUT {{baseURL}}/tracks/f5e06805-ce32-42ce-bd35-15ace88f74b8
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Updated Track",
+  "duration": "invalid"
+}
+
+### Delete a track (Valid Request)
+DELETE {{baseURL}}/tracks/d236de71-298e-4e26-b633-1d689c262d20
+Authorization: Bearer {{token}}
+
+### Delete a track (Invalid ID)
+DELETE {{baseURL}}/tracks/invalid
+Authorization: Bearer {{token}}

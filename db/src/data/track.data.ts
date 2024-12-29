@@ -17,7 +17,7 @@ export const getAllTracks = async (
 };
 
 export const getTrackById = async (trackId: string) => {
-  return trackModel.findById(trackId).populate('artist').populate('album').exec();
+  return trackModel.findById(trackId).populate('Artist').populate('Album').exec();
 };
 
 export const addTrack = async (trackData: Types.Track) => {
