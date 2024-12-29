@@ -1,38 +1,25 @@
 import { Request, Response, NextFunction } from 'express';
 import { Data } from 'music-database';
 import { Constants } from 'music-types';
+import { handleBadRequest, handleUnauthorized, handleForbidden, handleNotFound, handleSuccess, handleCreated, handleNoContent } from '../../../utils/statusHandler';
+import { handleError } from '../../../utils/errorHandler';
 
 export const getArtists = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { limit = 5, offset = 0, grammy, hidden } = req.query;
 
     if (grammy !== undefined && isNaN(Number(grammy))) {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad request.');
     }
 
     if (hidden !== undefined && !['true', 'false'].includes(hidden as string)) {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad request.');
     }
 
     const user = req.user;
 
     if (!user || ![Constants.UserRole.Admin, Constants.UserRole.Editor].includes(user.role as (typeof Constants.UserRole.Editor) || typeof Constants.UserRole.Admin)) {
-      return res.status(401).json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized Access',
-        error: null,
-      });
+      return handleUnauthorized(res, 'Unauthorized Access');
     }
 
     const filters: any = {};
@@ -41,16 +28,9 @@ export const getArtists = async (req: Request, res: Response, next: NextFunction
 
     const result = await Data.ArtistData.getArtists(filters, Number(limit), Number(offset));
 
-    return res.status(200).json({
-      status: 200,
-      data: result.artists,
-      message: 'Artists retrieved successfully.',
-      error: null,
-    });
+    return handleSuccess(res, result.artists, 'Artists retrieved successfully.');
   } catch (error) {
-    next(error);
-
-    return;
+    return handleError(res, next, error);
   }
 };
 
@@ -60,44 +40,22 @@ export const getArtistById = async (req: Request, res: Response, next: NextFunct
     const user = req.user;
 
     if (!user) {
-      return res.status(401).json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized Access',
-        error: null,
-      });
+      return handleUnauthorized(res, 'Unauthorized Access');
     }
 
     if (![Constants.UserRole.Admin, Constants.UserRole.Editor].includes(user.role as (typeof Constants.UserRole.Editor) || typeof Constants.UserRole.Admin)) {
-      return res.status(403).json({
-        status: 403,
-        data: null,
-        message: 'Forbidden Access/Operation not allowed.',
-        error: null,
-      });
+      return handleForbidden(res, 'Forbidden Access/Operation not allowed.');
     }
 
     const artist = await Data.ArtistData.getArtistById(id);
 
     if (!artist) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Artist not found.',
-        error: null,
-      });
+      return handleNotFound(res, 'Artist not found.');
     }
 
-    return res.status(200).json({
-      status: 200,
-      data: artist,
-      message: 'Artist retrieved successfully.',
-      error: null,
-    });
+    return handleSuccess(res, artist, 'Artist retrieved successfully.');
   } catch (error) {
-    next(error);
-
-    return;
+    return handleError(res, next, error);
   }
 };
 
@@ -106,46 +64,24 @@ export const addArtist = async (req: Request, res: Response, next: NextFunction)
     const user = req.user;
 
     if (!user) {
-      return res.status(401).json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized Access',
-        error: null,
-      });
+      return handleUnauthorized(res, 'Unauthorized Access');
     }
 
     if (![Constants.UserRole.Admin].includes(user.role as typeof Constants.UserRole.Admin)) {
-      return res.status(403).json({
-        status: 403,
-        data: null,
-        message: 'Forbidden Access/Operation not allowed.',
-        error: null,
-      });
+      return handleForbidden(res, 'Forbidden Access/Operation not allowed.');
     }
 
     const { name, grammy, hidden } = req.body;
 
     if (!name || typeof grammy !== 'number' || typeof hidden !== 'boolean') {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad Request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad Request.');
     }
 
     const newArtist = await Data.ArtistData.addArtist(req.body);
 
-    return res.status(201).json({
-      status: 201,
-      data: newArtist,
-      message: 'Artist created successfully.',
-      error: null,
-    });
+    return handleCreated(res, newArtist, 'Artist created successfully.');
   } catch (error) {
-    next(error);
-
-    return;
+    return handleError(res, next, error);
   }
 };
 
@@ -155,59 +91,32 @@ export const updateArtist = async (req: Request, res: Response, next: NextFuncti
     const user = req.user;
 
     if (!user) {
-      return res.status(401).json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized Access',
-        error: null,
-      });
+      return handleUnauthorized(res, 'Unauthorized Access');
     }
 
     if (![Constants.UserRole.Admin, Constants.UserRole.Editor].includes(user.role as (typeof Constants.UserRole.Editor) || typeof Constants.UserRole.Admin)) {
-      return res.status(403).json({
-        status: 403,
-        data: null,
-        message: 'Forbidden Access',
-        error: null,
-      });
+      return handleForbidden(res, 'Forbidden Access');
     }
 
     const { name, grammy, hidden } = req.body;
 
     if (!Object.keys(req.body).length) {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad Request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad Request.');
     }
 
     if (typeof name !== 'string' || grammy !== undefined && typeof grammy !== 'number' || hidden !== undefined && typeof hidden !== 'boolean') {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad Request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad Request.');
     }
 
     const updatedArtist = await Data.ArtistData.updateArtist(id, req.body);
 
     if (!updatedArtist) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Artist not found.',
-        error: null,
-      });
+      return handleNotFound(res, 'Artist not found.');
     }
 
-    return res.status(204).send();
+    return handleNoContent(res);
   } catch (error) {
-    next(error);
-
-    return;
+    return handleError(res, next, error);
   }
 };
 
@@ -217,43 +126,21 @@ export const deleteArtist = async (req: Request, res: Response, next: NextFuncti
     const user = req.user;
 
     if (!user) {
-      return res.status(401).json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized Access',
-        error: null,
-      });
+      return handleUnauthorized(res, 'Unauthorized Access');
     }
 
     if (![Constants.UserRole.Admin, Constants.UserRole.Editor].includes(user.role as (typeof Constants.UserRole.Editor) || typeof Constants.UserRole.Admin)) {
-      return res.status(403).json({
-        status: 403,
-        data: null,
-        message: 'Forbidden Access/Operation not allowed.',
-        error: null,
-      });
+      return handleForbidden(res, 'Forbidden Access/Operation not allowed.');
     }
 
     const deletedArtist = await Data.ArtistData.deleteArtist(id);
 
     if (!deletedArtist) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Artist not found.',
-        error: null,
-      });
+      return handleNotFound(res, 'Artist not found.');
     }
 
-    return res.status(200).json({
-      status: 200,
-      data: { artist_id: deletedArtist._id },
-      message: `Artist: ${deletedArtist.name} deleted successfully.`,
-      error: null,
-    });
+    return handleSuccess(res, { artist_id: deletedArtist._id }, `Artist: ${deletedArtist.name} deleted successfully.`);
   } catch (error) {
-    next(error);
-
-    return;
+    return handleError(res, next, error);
   }
 };

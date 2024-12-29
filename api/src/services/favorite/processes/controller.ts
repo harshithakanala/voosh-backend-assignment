@@ -1,38 +1,25 @@
 import { NextFunction, Request, Response } from 'express';
 import { Constants, Types } from 'music-types';
 import { Data } from 'music-database';
+import { handleBadRequest, handleUnauthorized, handleForbidden, handleNotFound, handleSuccess, handleCreated } from '../../../utils/statusHandler';
+import { handleError } from '../../../utils/errorHandler';
 
 export const addFavoriteController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = req.user;
 
     if (!user) {
-      return res.status(401).json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized Access',
-        error: null,
-      });
+      return handleUnauthorized(res, 'Unauthorized Access');
     }
 
     if (![Constants.UserRole.Admin, Constants.UserRole.Editor, Constants.UserRole.Viewer].includes(user.role)) {
-      return res.status(403).json({
-        status: 403,
-        data: null,
-        message: 'Forbidden Access/Operation not allowed.',
-        error: null,
-      });
+      return handleForbidden(res, 'Forbidden Access/Operation not allowed.');
     }
 
     const { category, item_id } = req.body;
 
     if (!category || !item_id) {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad Request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad Request.');
     }
 
     let itemExists = false;
@@ -47,21 +34,11 @@ export const addFavoriteController = async (req: Request, res: Response, next: N
       const track = await Data.TrackData.getTrackById(item_id);
       itemExists = track !== null;
     } else {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad Request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad Request.');
     }
 
     if (!itemExists) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: `${category} not found.`,
-        error: null,
-      });
+      return handleNotFound(res, `${category} not found.`);
     }
 
     const favoriteData: Types.Favorite = {
@@ -71,16 +48,9 @@ export const addFavoriteController = async (req: Request, res: Response, next: N
 
     const favorite = await Data.FavoriteData.addFavorite(favoriteData);
 
-    return res.status(201).json({
-      status: 201,
-      data: favorite,
-      message: 'Favorite added successfully',
-      error: null,
-    });
+    return handleCreated(res, favorite, 'Favorite added successfully');
   } catch (error) {
-    next(error);
-
-    return;
+    return handleError(res, next, error);
   }
 };
 
@@ -91,79 +61,42 @@ export const getFavorites = async (req: Request, res: Response, next: NextFuncti
     const validCategories = Object.values(Constants.CategoryType);
 
     if (!category || !validCategories.includes(category as (typeof Constants.CategoryType.Album) || typeof Constants.CategoryType.Artist || typeof Constants.CategoryType.Track)) {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad Request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad Request.');
     }
 
     if (isNaN(Number(limit)) || Number(limit) <= 0) {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad Request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad Request.');
     }
 
     if (isNaN(Number(offset)) || Number(offset) < 0) {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad Request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad Request.');
     }
 
     const user = req.user;
 
     if (!user) {
-      return res.status(401).json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized Access.',
-        error: null,
-      });
+      return handleUnauthorized(res, 'Unauthorized Access.');
     }
 
     if (![Constants.UserRole.Admin, Constants.UserRole.Editor, Constants.UserRole.Viewer].includes(user.role)) {
-      return res.status(403).json({
-        status: 403,
-        data: null,
-        message: 'Forbidden Access/Operation not allowed.',
-        error: null,
-      });
+      return handleForbidden(res, 'Forbidden Access/Operation not allowed.');
     }
 
     const result = await Data.FavoriteData.getFavoritesByCategory(user._id!, category, Number(limit), Number(offset));
 
     if (result.length === 0) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: `No ${category} favorites found.`,
-        error: null,
-      });
+      return handleNotFound(res, `No ${category} favorites found.`);
     }
 
-    return res.status(200).json({
-      status: 200,
-      data: result.map((favorite: any) => ({
-        favorite_id: favorite._id,
-        category: favorite.category,
-        item_id: favorite.itemId,
-        name: favorite.name,
-        created_at: favorite.createdAt,
-      })),
-      message: 'Favorites retrieved successfully.',
-      error: null,
-    });
+    return handleSuccess(res, result.map((favorite: any) => ({
+      favorite_id: favorite._id,
+      category: favorite.category,
+      item_id: favorite.itemId,
+      name: favorite.name,
+      created_at: favorite.createdAt,
+    })), 'Favorites retrieved successfully.');
   } catch (error) {
-    next(error);
-
-    return;
+    return handleError(res, next, error);
   }
 };
 
@@ -173,43 +106,21 @@ export const removeFavorite = async (req: Request, res: Response, next: NextFunc
     const user = req.user;
 
     if (!user) {
-      return res.status(401).json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized Access',
-        error: null,
-      });
+      return handleUnauthorized(res, 'Unauthorized Access');
     }
 
     if (![Constants.UserRole.Admin, Constants.UserRole.Editor, Constants.UserRole.Viewer].includes(user.role)) {
-      return res.status(403).json({
-        status: 403,
-        data: null,
-        message: 'Forbidden Access/Operation not allowed.',
-        error: null,
-      });
+      return handleForbidden(res, 'Forbidden Access/Operation not allowed.');
     }
 
     const deletedFavourite = await Data.FavoriteData.removeFavoriteById(id);
 
     if (!deletedFavourite) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Favourite not found.',
-        error: null,
-      });
+      return handleNotFound(res, 'Favourite not found.');
     }
 
-    return res.status(200).json({
-      status: 200,
-      data: null,
-      message: 'Favorite removed successfully.',
-      error: null,
-    });
+    return handleSuccess(res, null, 'Favorite removed successfully.');
   } catch (error) {
-    next(error);
-
-    return;
+    return handleError(res, next, error);
   }
 };

@@ -1,29 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
 import { Constants } from 'music-types';
 import { Data } from 'music-database';
+import { handleBadRequest, handleUnauthorized, handleForbidden, handleNotFound, handleSuccess, handleCreated, handleNoContent, handleConflict } from '../../../utils/statusHandler';
+import { handleError } from '../../../utils/errorHandler';
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { limit = 5, offset = 0, role } = req.query;
 
     if (role && ![Constants.UserRole.Editor, Constants.UserRole.Viewer].includes(role as (typeof Constants.UserRole.Editor) || typeof Constants.UserRole.Viewer)) {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad request.');
     }
 
     const user = req.user;
 
     if (!user || user.role !== Constants.UserRole.Admin) {
-      return res.status(401).json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized Access',
-        error: null,
-      });
+      return handleUnauthorized(res, 'Unauthorized Access');
     }
 
     const users = await Data.UserData.getUsers({
@@ -32,16 +24,9 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction) 
       role: role as string,
     });
 
-    return res.status(200).json({
-      status: 200,
-      data: users,
-      message: 'Users retrieved successfully.',
-      error: null,
-    });
+    return handleSuccess(res, users, 'Users retrieved successfully.');
   } catch (error) {
-    next(error);
-
-    return;
+    return handleError(res, next, error);
   }
 };
 
@@ -51,55 +36,28 @@ export const addUser = async (req: Request, res: Response, next: NextFunction) =
     const user = req.user;
 
     if (!user || user.role !== Constants.UserRole.Admin) {
-      return res.status(401).json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized Access',
-        error: null,
-      });
+      return handleUnauthorized(res, 'Unauthorized Access');
     }
 
     if (req.user.role !== Constants.UserRole.Admin) {
-      return res.status(403).json({
-        status: 403,
-        data: null,
-        message: 'Forbidden Access/Operation not allowed.',
-        error: null,
-      });
+      return handleForbidden(res, 'Forbidden Access/Operation not allowed.');
     }
 
     if (role !== Constants.UserRole.Editor && role !== Constants.UserRole.Viewer) {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad request.');
     }
 
     const existingUser = await Data.UserData.getUserByEmail(email);
 
     if (existingUser) {
-      return res.status(409).json({
-        status: 409,
-        data: null,
-        message: 'Email already exists.',
-        error: null,
-      });
+      return handleConflict(res, 'Email already exists.');
     }
 
     await Data.UserData.createUser({ email, password, role });
 
-    return res.status(201).json({
-      status: 201,
-      data: null,
-      message: 'User created successfully.',
-      error: null,
-    });
+    return handleCreated(res, null, 'User created successfully.');
   } catch (error) {
-    next(error);
-
-    return;
+    return handleError(res, next, error);
   }
 };
 
@@ -108,55 +66,28 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
     const { id } = req.params;
 
     if (!req.user) {
-      return res.status(401).json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized Access',
-        error: null,
-      });
+      return handleUnauthorized(res, 'Unauthorized Access');
     }
 
     if (req.user.role !== Constants.UserRole.Admin) {
-      return res.status(403).json({
-        status: 403,
-        data: null,
-        message: 'Forbidden Access/Operation not allowed.',
-        error: null,
-      });
+      return handleForbidden(res, 'Forbidden Access/Operation not allowed.');
     }
 
     if (!id) {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad Request',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad Request');
     }
 
     const user = await Data.UserData.getUserById(id);
 
     if (!user) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'User not found.',
-        error: null,
-      });
+      return handleNotFound(res, 'User not found.');
     }
 
     await Data.UserData.deleteUserById(id);
 
-    return res.status(200).json({
-      status: 200,
-      data: null,
-      message: 'User deleted successfully.',
-      error: null,
-    });
+    return handleSuccess(res, null, 'User deleted successfully.');
   } catch (error) {
-    next(error);
-
-    return;
+    return handleError(res, next, error);
   }
 };
 
@@ -166,42 +97,25 @@ export const updatePassword = async (req: Request, res: Response, next: NextFunc
     const userId = req.user?._id;
 
     if (!userId || !old_password || !new_password) {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad request.');
     }
 
     const user = await Data.UserData.getUserById(userId);
 
     if (!user) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'User not found.',
-        error: null,
-      });
+      return handleNotFound(res, 'User not found.');
     }
 
     const isOldPasswordValid = await Data.UserData.comparePassword(old_password, user.password);
 
     if (!isOldPasswordValid) {
-      return res.status(403).json({
-        status: 403,
-        data: null,
-        message: 'Forbidden Access/Operation not allowed.',
-        error: null,
-      });
+      return handleForbidden(res, 'Forbidden Access/Operation not allowed.');
     }
 
     await Data.UserData.updateUserPassword(userId, old_password, new_password);
 
-    return res.status(204).send();
+    return handleNoContent(res);
   } catch (error) {
-    next(error);
-
-    return;
+    return handleError(res, next, error);
   }
 };

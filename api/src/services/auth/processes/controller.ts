@@ -1,146 +1,82 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { Data } from 'music-database';
 import { Constants } from 'music-types';
+import { handleBadRequest, handleUnauthorized, handleNotFound, handleSuccess, handleCreated } from '../../../utils/statusHandler';
+import { handleError } from '../../../utils/errorHandler';
+
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 
-export const signupUser = async (req: Request, res: Response): Promise<Response> => {
+export const signupUser = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
   const { email, password } = req.body;
 
   if (!email || !password) {
     const missingField = !email ? 'email' : 'password';
 
-    return res.status(400).json({
-      status: 400,
-      data: null,
-      message: `Bad Request, Reason:Missing Field ${missingField}`,
-      error: null,
-    });
+    return handleBadRequest(res, `Bad Request, Reason: Missing Field ${missingField}`);
   }
 
   try {
     const existingUser = await Data.UserData.getUserByEmail(email);
 
     if (existingUser) {
-      return res.status(409).json({
-        status: 409,
-        data: null,
-        message: 'Email already exists.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Email already exists.');
     }
 
     const role = (await Data.UserData.countUsers()) === 0 ? Constants.UserRole.Admin : Constants.UserRole.Viewer;
     const user = await Data.UserData.createUser({ email, password, role });
-    console.log(user);
 
-    return res.status(201).json({
-      status: 201,
-      data: null,
-      message: 'User created successfully.',
-      error: null,
-    });
+    return handleCreated(res, null, 'User created successfully.');
   } catch (error) {
-    return res.status(500).json({
-      status: 500,
-      data: null,
-      message: 'Internal Server Error: Unable to register user.',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    return handleError(res, next, error);
   }
 };
 
-export const loginUser = async (req: Request, res: Response): Promise<Response> => {
+export const loginUser = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({
-      status: 400,
-      data: null,
-      message: 'Bad Request, Reason: Missing email or password',
-      error: null,
-    });
+    return handleBadRequest(res, 'Bad Request, Reason: Missing email or password');
   }
 
   try {
     const user = await Data.UserData.getUserByEmail(email);
-    console.log('User:', user);
 
     if (!user) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'User not found.',
-        error: null,
-      });
+      return handleNotFound(res, 'User not found.');
     }
 
     const isPasswordValid = await bcrypt.compare(password.trim(), user.password);
 
     if (!isPasswordValid) {
-      return res.status(401).json({
-        status: 401,
-        data: null,
-        message: 'Invalid password.',
-        error: null,
-      });
+      return handleUnauthorized(res, 'Invalid password.');
     }
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
 
-    return res.status(200).json({
-      status: 200,
-      data: { token },
-      message: 'Login successful.',
-      error: null,
-    });
+    return handleSuccess(res, { token }, 'Login successful.');
   } catch (error) {
-    return res.status(500).json({
-      status: 500,
-      data: null,
-      message: 'Internal Server Error',
-      error: error instanceof Error ? error.message : null,
-    });
+    return handleError(res, next, error);
   }
 };
 
-export const logoutUser = async (req: Request, res: Response): Promise<Response> => {
+export const logoutUser = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad Request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad Request.');
     }
 
     try {
       await jwt.verify(token, JWT_SECRET);
     } catch (err) {
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Bad Request.',
-        error: null,
-      });
+      return handleBadRequest(res, 'Bad Request.');
     }
 
-    return res.status(200).json({
-      status: 200,
-      data: null,
-      message: 'User logged out successfully.',
-      error: null,
-    });
+    return handleSuccess(res, null, 'User logged out successfully.');
   } catch (error) {
-    return res.status(500).json({
-      status: 500,
-      data: null,
-      message: 'Internal Server Error.',
-      error: error instanceof Error ? error.message : null,
-    });
+    return handleError(res, next, error);
   }
 };
