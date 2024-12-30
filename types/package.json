@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "lint": "eslint ./src/"
+    "lint": "eslint ./src/",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [],
   "author": {
@@ -24,5 +25,9 @@
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.0"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "displayName": "Music - Types",
   "packageManager": "yarn@1.22.19"
 }

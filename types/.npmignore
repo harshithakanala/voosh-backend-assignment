@@ -1,0 +1,8 @@
+src/
+.eslintrc.js
+.eslintrc.json
+tsconfig.*
+.vscode/
+*.md
+.yarnrc
+*.log
