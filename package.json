@@ -1,0 +1,26 @@
+{
+  "name": "voosh-backend-assignment",
+  "version": "1.0.0",
+  "description": "Enhanced Music Library Management API",
+  "private": true,
+  "workspaces": [
+    "api",
+    "database",
+    "types"
+  ],
+  "scripts": {
+    "build": "yarn workspace types build && yarn workspace database build && yarn workspace api build",
+    "start": "yarn workspace api start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harshithakanala/voosh-backend-assignment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/harshithakanala/voosh-backend-assignment/issues"
+  },
+  "homepage": "https://github.com/harshithakanala/voosh-backend-assignment#readme"
+}
