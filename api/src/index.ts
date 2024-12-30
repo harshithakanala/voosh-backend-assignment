@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import { AuthRouteService } from './services/auth/router';
 import path from 'path';
 import { UserRouteService } from './services/user/router';
@@ -18,6 +19,9 @@ const host = process.env.HOST || 'localhost';
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+
+// Enable CORS
+app.use(cors());
 
 // Connect to MongoDB
 connectToDatabase();
